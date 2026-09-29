@@ -480,10 +480,58 @@ class MoT(nn.Module):
         video_context_mask: torch.Tensor,
         video_attention_mask: torch.Tensor,
     ) -> tuple[list[torch.Tensor], list[torch.Tensor]]:
+        cache_k_list, cache_v_list, _features = self._prefill_video_cache_tensor_core(
+            video_tokens=video_tokens,
+            video_freqs=video_freqs,
+            video_t_mod=video_t_mod,
+            video_context=video_context,
+            video_context_mask=video_context_mask,
+            video_attention_mask=video_attention_mask,
+            capture_pooled_features=False,
+        )
+        return cache_k_list, cache_v_list
+
+    def prefill_video_cache_tensor_with_pooled_features(
+        self,
+        video_tokens: torch.Tensor,
+        video_freqs: torch.Tensor,
+        video_t_mod: torch.Tensor,
+        video_context: torch.Tensor,
+        video_context_mask: torch.Tensor,
+        video_attention_mask: torch.Tensor,
+    ) -> tuple[list[torch.Tensor], list[torch.Tensor], list[torch.Tensor]]:
+        """Prefill video K/V and expose compact features without changing them.
+
+        The returned list has one ``[B, 3, D]`` tensor per layer containing the
+        token means of post-block hidden state, current-layer K, and current-layer
+        V.  Keeping this as a separate entrypoint leaves the normal compiled
+        inference signature and return value unchanged.
+        """
+        return self._prefill_video_cache_tensor_core(
+            video_tokens=video_tokens,
+            video_freqs=video_freqs,
+            video_t_mod=video_t_mod,
+            video_context=video_context,
+            video_context_mask=video_context_mask,
+            video_attention_mask=video_attention_mask,
+            capture_pooled_features=True,
+        )
+
+    def _prefill_video_cache_tensor_core(
+        self,
+        video_tokens: torch.Tensor,
+        video_freqs: torch.Tensor,
+        video_t_mod: torch.Tensor,
+        video_context: torch.Tensor,
+        video_context_mask: torch.Tensor,
+        video_attention_mask: torch.Tensor,
+        capture_pooled_features: bool,
+    ) -> tuple[list[torch.Tensor], list[torch.Tensor], list[torch.Tensor]]:
         expert = self.mixtures["video"]
         x = video_tokens
         cache_k_list: list[torch.Tensor] = []
         cache_v_list: list[torch.Tensor] = []
+        pooled_features: list[torch.Tensor] = []
         for layer_idx in range(self.num_layers):
             block = expert.blocks[layer_idx]
             (
@@ -523,7 +571,16 @@ class MoT(nn.Module):
             )
             cache_k_list.append(k)
             cache_v_list.append(v)
-        return cache_k_list, cache_v_list
+            if capture_pooled_features:
+                # Float32 pooling is observational only.  The unmodified x/k/v
+                # tensors continue down the exact policy path.
+                pooled_features.append(
+                    torch.stack(
+                        (x.float().mean(dim=1), k.float().mean(dim=1), v.float().mean(dim=1)),
+                        dim=1,
+                    )
+                )
+        return cache_k_list, cache_v_list, pooled_features
 
     def forward_action_with_video_cache_tensor(
         self,
@@ -536,8 +593,58 @@ class MoT(nn.Module):
         video_cache_v: list[torch.Tensor],
         action_attention_mask: torch.Tensor,
     ) -> torch.Tensor:
+        action_out, _pooled_features = self._forward_action_with_video_cache_tensor_core(
+            action_tokens=action_tokens,
+            action_freqs=action_freqs,
+            action_t_mod=action_t_mod,
+            action_context=action_context,
+            action_context_mask=action_context_mask,
+            video_cache_k=video_cache_k,
+            video_cache_v=video_cache_v,
+            action_attention_mask=action_attention_mask,
+            capture_pooled_features=False,
+        )
+        return action_out
+
+    def forward_action_with_video_cache_tensor_with_pooled_features(
+        self,
+        action_tokens: torch.Tensor,
+        action_freqs: torch.Tensor,
+        action_t_mod: torch.Tensor,
+        action_context: torch.Tensor,
+        action_context_mask: torch.Tensor,
+        video_cache_k: list[torch.Tensor],
+        video_cache_v: list[torch.Tensor],
+        action_attention_mask: torch.Tensor,
+    ) -> tuple[torch.Tensor, list[torch.Tensor]]:
+        """Run the action expert and expose only per-layer token means."""
+        return self._forward_action_with_video_cache_tensor_core(
+            action_tokens=action_tokens,
+            action_freqs=action_freqs,
+            action_t_mod=action_t_mod,
+            action_context=action_context,
+            action_context_mask=action_context_mask,
+            video_cache_k=video_cache_k,
+            video_cache_v=video_cache_v,
+            action_attention_mask=action_attention_mask,
+            capture_pooled_features=True,
+        )
+
+    def _forward_action_with_video_cache_tensor_core(
+        self,
+        action_tokens: torch.Tensor,
+        action_freqs: torch.Tensor,
+        action_t_mod: torch.Tensor,
+        action_context: torch.Tensor,
+        action_context_mask: torch.Tensor,
+        video_cache_k: list[torch.Tensor],
+        video_cache_v: list[torch.Tensor],
+        action_attention_mask: torch.Tensor,
+        capture_pooled_features: bool,
+    ) -> tuple[torch.Tensor, list[torch.Tensor]]:
         expert = self.mixtures["action"]
         x = action_tokens
+        pooled_features: list[torch.Tensor] = []
         for layer_idx in range(self.num_layers):
             block = expert.blocks[layer_idx]
             (
@@ -575,7 +682,10 @@ class MoT(nn.Module):
                 context=action_context,
                 context_mask=action_context_mask,
             )
-        return x
+            if capture_pooled_features:
+                # Observational only: x itself remains on the unchanged policy path.
+                pooled_features.append(x.float().mean(dim=1))
+        return x, pooled_features
 
     def _forward_joint_layer(
         self,

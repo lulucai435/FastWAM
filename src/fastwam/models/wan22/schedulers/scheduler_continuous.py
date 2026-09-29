@@ -66,14 +66,24 @@ class WanContinuousFlowMatchScheduler:
         device: torch.device,
         dtype: torch.dtype,
         shift_override: float | None = None,
+        start_sigma: float = 1.0,
     ) -> tuple[torch.Tensor, torch.Tensor]:
         if num_inference_steps <= 0:
             raise ValueError(f"`num_inference_steps` must be positive, got {num_inference_steps}")
         shift = self.shift if shift_override is None else float(shift_override)
         if shift <= 0:
             raise ValueError(f"`shift` must be positive, got {shift}")
+        start_sigma = float(start_sigma)
+        if not 0.0 <= start_sigma <= 1.0:
+            raise ValueError(f"`start_sigma` must be in [0, 1], got {start_sigma}")
 
-        u_steps = torch.linspace(1.0, 0.0, num_inference_steps + 1, device=device, dtype=torch.float32)
+        # The public warm-start parameter is expressed in the scheduler's actual
+        # flow coordinate sigma.  Convert it back to the unshifted coordinate so
+        # a truncated schedule preserves the same shifted trajectory as a normal
+        # noise-to-clean schedule.  phi(u)=shift*u/(1+(shift-1)*u).
+        denominator = shift - (shift - 1.0) * start_sigma
+        start_u = start_sigma / denominator
+        u_steps = torch.linspace(start_u, 0.0, num_inference_steps + 1, device=device, dtype=torch.float32)
         sigma_steps = self._phi(u_steps, shift)
         timesteps = sigma_steps[:-1] * float(self.num_train_timesteps)
         deltas = sigma_steps[1:] - sigma_steps[:-1]

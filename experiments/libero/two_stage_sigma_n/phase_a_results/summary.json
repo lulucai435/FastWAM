@@ -1,0 +1,1517 @@
+{
+  "states": 772,
+  "tasks": 28,
+  "delta": 0.01,
+  "pooled_rho": 0.441574367121108,
+  "task_demeaned_rho": 0.3908125438690243,
+  "per_task_signs": {
+    "positive": 24,
+    "negative": 4,
+    "zero": 0,
+    "undefined": 0
+  },
+  "per_task": [
+    {
+      "task": "libero_10/task3",
+      "states": 38,
+      "rho": 0.3267408242308048,
+      "mean_sigma_star": 0.7684210526315789,
+      "median_sigma_star": 0.75,
+      "sigma_star_distribution": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        4,
+        15,
+        11,
+        5,
+        3
+      ],
+      "conservative_direct_reuse_rate": 0.0,
+      "direct_action_pass_rate": 0.0
+    },
+    {
+      "task": "libero_10/task4",
+      "states": 39,
+      "rho": 0.5530647389532185,
+      "mean_sigma_star": 0.7256410256410256,
+      "median_sigma_star": 0.7,
+      "sigma_star_distribution": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        3,
+        4,
+        19,
+        8,
+        3,
+        2
+      ],
+      "conservative_direct_reuse_rate": 0.0,
+      "direct_action_pass_rate": 0.0
+    },
+    {
+      "task": "libero_10/task5",
+      "states": 31,
+      "rho": -0.1809138913546414,
+      "mean_sigma_star": 0.7129032258064517,
+      "median_sigma_star": 0.7,
+      "sigma_star_distribution": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        1,
+        9,
+        10,
+        7,
+        4,
+        0
+      ],
+      "conservative_direct_reuse_rate": 0.0,
+      "direct_action_pass_rate": 0.0
+    },
+    {
+      "task": "libero_10/task6",
+      "states": 71,
+      "rho": 0.16416768570941262,
+      "mean_sigma_star": 0.7507042253521126,
+      "median_sigma_star": 0.7,
+      "sigma_star_distribution": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        1,
+        8,
+        33,
+        19,
+        3,
+        7
+      ],
+      "conservative_direct_reuse_rate": 0.0,
+      "direct_action_pass_rate": 0.0
+    },
+    {
+      "task": "libero_10/task7",
+      "states": 41,
+      "rho": 0.49717358668006184,
+      "mean_sigma_star": 0.7707317073170732,
+      "median_sigma_star": 0.8,
+      "sigma_star_distribution": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        6,
+        12,
+        15,
+        4,
+        4
+      ],
+      "conservative_direct_reuse_rate": 0.0,
+      "direct_action_pass_rate": 0.0
+    },
+    {
+      "task": "libero_10/task8",
+      "states": 63,
+      "rho": 0.17738181798861916,
+      "mean_sigma_star": 0.723809523809524,
+      "median_sigma_star": 0.7,
+      "sigma_star_distribution": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        1,
+        12,
+        34,
+        8,
+        3,
+        5
+      ],
+      "conservative_direct_reuse_rate": 0.0,
+      "direct_action_pass_rate": 0.0
+    },
+    {
+      "task": "libero_10/task9",
+      "states": 44,
+      "rho": 0.12165415472865537,
+      "mean_sigma_star": 0.8022727272727272,
+      "median_sigma_star": 0.8,
+      "sigma_star_distribution": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        3,
+        10,
+        15,
+        15,
+        1
+      ],
+      "conservative_direct_reuse_rate": 0.0,
+      "direct_action_pass_rate": 0.0
+    },
+    {
+      "task": "libero_goal/task3",
+      "states": 44,
+      "rho": 0.4593258582477204,
+      "mean_sigma_star": 0.8295454545454543,
+      "median_sigma_star": 0.8,
+      "sigma_star_distribution": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        2,
+        10,
+        14,
+        9,
+        9
+      ],
+      "conservative_direct_reuse_rate": 0.0,
+      "direct_action_pass_rate": 0.0
+    },
+    {
+      "task": "libero_goal/task4",
+      "states": 15,
+      "rho": 0.25153400438348705,
+      "mean_sigma_star": 0.7733333333333334,
+      "median_sigma_star": 0.8,
+      "sigma_star_distribution": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        6,
+        8,
+        0,
+        1
+      ],
+      "conservative_direct_reuse_rate": 0.0,
+      "direct_action_pass_rate": 0.0
+    },
+    {
+      "task": "libero_goal/task5",
+      "states": 22,
+      "rho": 0.4742078042771826,
+      "mean_sigma_star": 0.7681818181818181,
+      "median_sigma_star": 0.75,
+      "sigma_star_distribution": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        2,
+        9,
+        5,
+        6,
+        0
+      ],
+      "conservative_direct_reuse_rate": 0.0,
+      "direct_action_pass_rate": 0.0
+    },
+    {
+      "task": "libero_goal/task6",
+      "states": 17,
+      "rho": -0.047582531162572786,
+      "mean_sigma_star": 0.8411764705882353,
+      "median_sigma_star": 0.8,
+      "sigma_star_distribution": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        3,
+        6,
+        6,
+        2
+      ],
+      "conservative_direct_reuse_rate": 0.0,
+      "direct_action_pass_rate": 0.0
+    },
+    {
+      "task": "libero_goal/task7",
+      "states": 32,
+      "rho": 0.8398061139184217,
+      "mean_sigma_star": 0.928125,
+      "median_sigma_star": 1.0,
+      "sigma_star_distribution": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        2,
+        7,
+        3,
+        20
+      ],
+      "conservative_direct_reuse_rate": 0.0,
+      "direct_action_pass_rate": 0.0
+    },
+    {
+      "task": "libero_goal/task8",
+      "states": 12,
+      "rho": 0.35846408954943243,
+      "mean_sigma_star": 0.7666666666666667,
+      "median_sigma_star": 0.8,
+      "sigma_star_distribution": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        4,
+        8,
+        0,
+        0
+      ],
+      "conservative_direct_reuse_rate": 0.0,
+      "direct_action_pass_rate": 0.0
+    },
+    {
+      "task": "libero_goal/task9",
+      "states": 22,
+      "rho": -0.11511089261379083,
+      "mean_sigma_star": 0.8545454545454546,
+      "median_sigma_star": 0.9,
+      "sigma_star_distribution": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        10,
+        12,
+        0
+      ],
+      "conservative_direct_reuse_rate": 0.0,
+      "direct_action_pass_rate": 0.0
+    },
+    {
+      "task": "libero_object/task3",
+      "states": 22,
+      "rho": 0.6917576818831499,
+      "mean_sigma_star": 0.7181818181818183,
+      "median_sigma_star": 0.7,
+      "sigma_star_distribution": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        6,
+        9,
+        5,
+        1,
+        1
+      ],
+      "conservative_direct_reuse_rate": 0.0,
+      "direct_action_pass_rate": 0.0
+    },
+    {
+      "task": "libero_object/task4",
+      "states": 23,
+      "rho": 0.6857533333165705,
+      "mean_sigma_star": 0.6739130434782609,
+      "median_sigma_star": 0.7,
+      "sigma_star_distribution": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        5,
+        6,
+        5,
+        5,
+        1,
+        1
+      ],
+      "conservative_direct_reuse_rate": 0.0,
+      "direct_action_pass_rate": 0.0
+    },
+    {
+      "task": "libero_object/task5",
+      "states": 20,
+      "rho": 0.519478286772514,
+      "mean_sigma_star": 0.7299999999999999,
+      "median_sigma_star": 0.7,
+      "sigma_star_distribution": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        2,
+        5,
+        4,
+        5,
+        2,
+        2
+      ],
+      "conservative_direct_reuse_rate": 0.0,
+      "direct_action_pass_rate": 0.0
+    },
+    {
+      "task": "libero_object/task6",
+      "states": 23,
+      "rho": 0.6773048508633488,
+      "mean_sigma_star": 0.7304347826086955,
+      "median_sigma_star": 0.7,
+      "sigma_star_distribution": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        2,
+        5,
+        6,
+        6,
+        2,
+        2
+      ],
+      "conservative_direct_reuse_rate": 0.0,
+      "direct_action_pass_rate": 0.0
+    },
+    {
+      "task": "libero_object/task7",
+      "states": 22,
+      "rho": 0.777275975208215,
+      "mean_sigma_star": 0.7090909090909091,
+      "median_sigma_star": 0.7,
+      "sigma_star_distribution": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        2,
+        4,
+        9,
+        4,
+        3,
+        0
+      ],
+      "conservative_direct_reuse_rate": 0.0,
+      "direct_action_pass_rate": 0.0
+    },
+    {
+      "task": "libero_object/task8",
+      "states": 25,
+      "rho": 0.6948577618742902,
+      "mean_sigma_star": 0.732,
+      "median_sigma_star": 0.7,
+      "sigma_star_distribution": [
+        0,
+        0,
+        0,
+        0,
+        1,
+        3,
+        3,
+        8,
+        3,
+        4,
+        3
+      ],
+      "conservative_direct_reuse_rate": 0.0,
+      "direct_action_pass_rate": 0.0
+    },
+    {
+      "task": "libero_object/task9",
+      "states": 18,
+      "rho": 0.5377078081658331,
+      "mean_sigma_star": 0.6888888888888888,
+      "median_sigma_star": 0.7,
+      "sigma_star_distribution": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        4,
+        2,
+        4,
+        8,
+        0,
+        0
+      ],
+      "conservative_direct_reuse_rate": 0.0,
+      "direct_action_pass_rate": 0.0
+    },
+    {
+      "task": "libero_spatial/task3",
+      "states": 19,
+      "rho": 0.6922195708635978,
+      "mean_sigma_star": 0.868421052631579,
+      "median_sigma_star": 0.9,
+      "sigma_star_distribution": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        2,
+        6,
+        7,
+        4
+      ],
+      "conservative_direct_reuse_rate": 0.0,
+      "direct_action_pass_rate": 0.0
+    },
+    {
+      "task": "libero_spatial/task4",
+      "states": 21,
+      "rho": 0.3617073153841304,
+      "mean_sigma_star": 0.7714285714285714,
+      "median_sigma_star": 0.8,
+      "sigma_star_distribution": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        2,
+        8,
+        6,
+        4,
+        1
+      ],
+      "conservative_direct_reuse_rate": 0.0,
+      "direct_action_pass_rate": 0.0
+    },
+    {
+      "task": "libero_spatial/task5",
+      "states": 15,
+      "rho": -0.4706252173843803,
+      "mean_sigma_star": 0.8266666666666668,
+      "median_sigma_star": 0.8,
+      "sigma_star_distribution": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        3,
+        5,
+        7,
+        0
+      ],
+      "conservative_direct_reuse_rate": 0.0,
+      "direct_action_pass_rate": 0.0
+    },
+    {
+      "task": "libero_spatial/task6",
+      "states": 18,
+      "rho": 0.4130709630151731,
+      "mean_sigma_star": 0.7722222222222221,
+      "median_sigma_star": 0.8,
+      "sigma_star_distribution": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        1,
+        7,
+        8,
+        0,
+        2
+      ],
+      "conservative_direct_reuse_rate": 0.0,
+      "direct_action_pass_rate": 0.0
+    },
+    {
+      "task": "libero_spatial/task7",
+      "states": 21,
+      "rho": 0.3554532670660875,
+      "mean_sigma_star": 0.738095238095238,
+      "median_sigma_star": 0.7,
+      "sigma_star_distribution": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        2,
+        10,
+        8,
+        1,
+        0
+      ],
+      "conservative_direct_reuse_rate": 0.0,
+      "direct_action_pass_rate": 0.0
+    },
+    {
+      "task": "libero_spatial/task8",
+      "states": 15,
+      "rho": 0.3969626746677388,
+      "mean_sigma_star": 0.8066666666666669,
+      "median_sigma_star": 0.8,
+      "sigma_star_distribution": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        4,
+        6,
+        5,
+        0
+      ],
+      "conservative_direct_reuse_rate": 0.0,
+      "direct_action_pass_rate": 0.0
+    },
+    {
+      "task": "libero_spatial/task9",
+      "states": 19,
+      "rho": 0.04420568722120857,
+      "mean_sigma_star": 0.7842105263157896,
+      "median_sigma_star": 0.8,
+      "sigma_star_distribution": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        1,
+        1,
+        2,
+        11,
+        4,
+        0
+      ],
+      "conservative_direct_reuse_rate": 0.0,
+      "direct_action_pass_rate": 0.0
+    }
+  ],
+  "sigma_star_distribution": [
+    0,
+    0,
+    0,
+    0,
+    1,
+    25,
+    87,
+    248,
+    227,
+    114,
+    70
+  ],
+  "mean_sigma_star": 0.7680051813471502,
+  "median_sigma_star": 0.8,
+  "conservative_direct_reuse_rate": 0.0,
+  "direct_action_pass_rate": 0.0,
+  "error_nonmonotonic_states": 464,
+  "error_nonmonotonic_states_above_1e_6": 464,
+  "heldout_g": {
+    "pooled_sigma_mae": 0.14028497409326426,
+    "macro_task_sigma_mae": 0.13489641179956602,
+    "mean_selected_sigma": 0.899740932642487,
+    "below_suffix_oracle_rate": 0.04145077720207254,
+    "action_threshold_failure_rate": 0.04145077720207254,
+    "macro_task_action_threshold_failure_rate": 0.038305005035430176,
+    "direct_reuse_rate": 0.0,
+    "direct_reuse_states": 0,
+    "direct_reuse_failed_states": 0,
+    "per_task": [
+      {
+        "task": "libero_10/task3",
+        "states": 38,
+        "sigma_mae": 0.1394736842105263,
+        "mean_selected_sigma": 0.8973684210526315,
+        "below_suffix_oracle_rate": 0.05263157894736842,
+        "action_threshold_failure_rate": 0.05263157894736842,
+        "direct_reuse_rate": 0.0,
+        "direct_reuse_failed_states": 0
+      },
+      {
+        "task": "libero_10/task4",
+        "states": 39,
+        "sigma_mae": 0.1769230769230769,
+        "mean_selected_sigma": 0.8974358974358975,
+        "below_suffix_oracle_rate": 0.02564102564102564,
+        "action_threshold_failure_rate": 0.02564102564102564,
+        "direct_reuse_rate": 0.0,
+        "direct_reuse_failed_states": 0
+      },
+      {
+        "task": "libero_10/task5",
+        "states": 31,
+        "sigma_mae": 0.17096774193548386,
+        "mean_selected_sigma": 0.8838709677419354,
+        "below_suffix_oracle_rate": 0.0,
+        "action_threshold_failure_rate": 0.0,
+        "direct_reuse_rate": 0.0,
+        "direct_reuse_failed_states": 0
+      },
+      {
+        "task": "libero_10/task6",
+        "states": 71,
+        "sigma_mae": 0.19577464788732396,
+        "mean_selected_sigma": 0.943661971830986,
+        "below_suffix_oracle_rate": 0.014084507042253521,
+        "action_threshold_failure_rate": 0.014084507042253521,
+        "direct_reuse_rate": 0.0,
+        "direct_reuse_failed_states": 0
+      },
+      {
+        "task": "libero_10/task7",
+        "states": 41,
+        "sigma_mae": 0.14146341463414633,
+        "mean_selected_sigma": 0.9073170731707316,
+        "below_suffix_oracle_rate": 0.024390243902439025,
+        "action_threshold_failure_rate": 0.024390243902439025,
+        "direct_reuse_rate": 0.0,
+        "direct_reuse_failed_states": 0
+      },
+      {
+        "task": "libero_10/task8",
+        "states": 63,
+        "sigma_mae": 0.15714285714285714,
+        "mean_selected_sigma": 0.8619047619047618,
+        "below_suffix_oracle_rate": 0.09523809523809523,
+        "action_threshold_failure_rate": 0.09523809523809523,
+        "direct_reuse_rate": 0.0,
+        "direct_reuse_failed_states": 0
+      },
+      {
+        "task": "libero_10/task9",
+        "states": 44,
+        "sigma_mae": 0.1181818181818182,
+        "mean_selected_sigma": 0.9068181818181819,
+        "below_suffix_oracle_rate": 0.06818181818181818,
+        "action_threshold_failure_rate": 0.06818181818181818,
+        "direct_reuse_rate": 0.0,
+        "direct_reuse_failed_states": 0
+      },
+      {
+        "task": "libero_goal/task3",
+        "states": 44,
+        "sigma_mae": 0.1181818181818182,
+        "mean_selected_sigma": 0.9295454545454545,
+        "below_suffix_oracle_rate": 0.09090909090909091,
+        "action_threshold_failure_rate": 0.09090909090909091,
+        "direct_reuse_rate": 0.0,
+        "direct_reuse_failed_states": 0
+      },
+      {
+        "task": "libero_goal/task4",
+        "states": 15,
+        "sigma_mae": 0.13999999999999999,
+        "mean_selected_sigma": 0.9,
+        "below_suffix_oracle_rate": 0.06666666666666667,
+        "action_threshold_failure_rate": 0.06666666666666667,
+        "direct_reuse_rate": 0.0,
+        "direct_reuse_failed_states": 0
+      },
+      {
+        "task": "libero_goal/task5",
+        "states": 22,
+        "sigma_mae": 0.10454545454545454,
+        "mean_selected_sigma": 0.8727272727272727,
+        "below_suffix_oracle_rate": 0.0,
+        "action_threshold_failure_rate": 0.0,
+        "direct_reuse_rate": 0.0,
+        "direct_reuse_failed_states": 0
+      },
+      {
+        "task": "libero_goal/task6",
+        "states": 17,
+        "sigma_mae": 0.11764705882352941,
+        "mean_selected_sigma": 0.9352941176470588,
+        "below_suffix_oracle_rate": 0.11764705882352941,
+        "action_threshold_failure_rate": 0.11764705882352941,
+        "direct_reuse_rate": 0.0,
+        "direct_reuse_failed_states": 0
+      },
+      {
+        "task": "libero_goal/task7",
+        "states": 32,
+        "sigma_mae": 0.034375,
+        "mean_selected_sigma": 0.9625,
+        "below_suffix_oracle_rate": 0.0,
+        "action_threshold_failure_rate": 0.0,
+        "direct_reuse_rate": 0.0,
+        "direct_reuse_failed_states": 0
+      },
+      {
+        "task": "libero_goal/task8",
+        "states": 12,
+        "sigma_mae": 0.14166666666666666,
+        "mean_selected_sigma": 0.9083333333333334,
+        "below_suffix_oracle_rate": 0.0,
+        "action_threshold_failure_rate": 0.0,
+        "direct_reuse_rate": 0.0,
+        "direct_reuse_failed_states": 0
+      },
+      {
+        "task": "libero_goal/task9",
+        "states": 22,
+        "sigma_mae": 0.05,
+        "mean_selected_sigma": 0.8863636363636364,
+        "below_suffix_oracle_rate": 0.09090909090909091,
+        "action_threshold_failure_rate": 0.09090909090909091,
+        "direct_reuse_rate": 0.0,
+        "direct_reuse_failed_states": 0
+      },
+      {
+        "task": "libero_object/task3",
+        "states": 22,
+        "sigma_mae": 0.1590909090909091,
+        "mean_selected_sigma": 0.8772727272727273,
+        "below_suffix_oracle_rate": 0.0,
+        "action_threshold_failure_rate": 0.0,
+        "direct_reuse_rate": 0.0,
+        "direct_reuse_failed_states": 0
+      },
+      {
+        "task": "libero_object/task4",
+        "states": 23,
+        "sigma_mae": 0.1826086956521739,
+        "mean_selected_sigma": 0.8478260869565217,
+        "below_suffix_oracle_rate": 0.043478260869565216,
+        "action_threshold_failure_rate": 0.043478260869565216,
+        "direct_reuse_rate": 0.0,
+        "direct_reuse_failed_states": 0
+      },
+      {
+        "task": "libero_object/task5",
+        "states": 20,
+        "sigma_mae": 0.16999999999999998,
+        "mean_selected_sigma": 0.8699999999999999,
+        "below_suffix_oracle_rate": 0.1,
+        "action_threshold_failure_rate": 0.1,
+        "direct_reuse_rate": 0.0,
+        "direct_reuse_failed_states": 0
+      },
+      {
+        "task": "libero_object/task6",
+        "states": 23,
+        "sigma_mae": 0.16521739130434782,
+        "mean_selected_sigma": 0.8782608695652174,
+        "below_suffix_oracle_rate": 0.08695652173913043,
+        "action_threshold_failure_rate": 0.08695652173913043,
+        "direct_reuse_rate": 0.0,
+        "direct_reuse_failed_states": 0
+      },
+      {
+        "task": "libero_object/task7",
+        "states": 22,
+        "sigma_mae": 0.16818181818181818,
+        "mean_selected_sigma": 0.8772727272727273,
+        "below_suffix_oracle_rate": 0.0,
+        "action_threshold_failure_rate": 0.0,
+        "direct_reuse_rate": 0.0,
+        "direct_reuse_failed_states": 0
+      },
+      {
+        "task": "libero_object/task8",
+        "states": 25,
+        "sigma_mae": 0.156,
+        "mean_selected_sigma": 0.8800000000000001,
+        "below_suffix_oracle_rate": 0.04,
+        "action_threshold_failure_rate": 0.04,
+        "direct_reuse_rate": 0.0,
+        "direct_reuse_failed_states": 0
+      },
+      {
+        "task": "libero_object/task9",
+        "states": 18,
+        "sigma_mae": 0.18888888888888888,
+        "mean_selected_sigma": 0.8777777777777779,
+        "below_suffix_oracle_rate": 0.0,
+        "action_threshold_failure_rate": 0.0,
+        "direct_reuse_rate": 0.0,
+        "direct_reuse_failed_states": 0
+      },
+      {
+        "task": "libero_spatial/task3",
+        "states": 19,
+        "sigma_mae": 0.08421052631578947,
+        "mean_selected_sigma": 0.9421052631578947,
+        "below_suffix_oracle_rate": 0.05263157894736842,
+        "action_threshold_failure_rate": 0.05263157894736842,
+        "direct_reuse_rate": 0.0,
+        "direct_reuse_failed_states": 0
+      },
+      {
+        "task": "libero_spatial/task4",
+        "states": 21,
+        "sigma_mae": 0.11428571428571428,
+        "mean_selected_sigma": 0.8761904761904763,
+        "below_suffix_oracle_rate": 0.047619047619047616,
+        "action_threshold_failure_rate": 0.047619047619047616,
+        "direct_reuse_rate": 0.0,
+        "direct_reuse_failed_states": 0
+      },
+      {
+        "task": "libero_spatial/task5",
+        "states": 15,
+        "sigma_mae": 0.07333333333333333,
+        "mean_selected_sigma": 0.9,
+        "below_suffix_oracle_rate": 0.0,
+        "action_threshold_failure_rate": 0.0,
+        "direct_reuse_rate": 0.0,
+        "direct_reuse_failed_states": 0
+      },
+      {
+        "task": "libero_spatial/task6",
+        "states": 18,
+        "sigma_mae": 0.12222222222222223,
+        "mean_selected_sigma": 0.8833333333333334,
+        "below_suffix_oracle_rate": 0.05555555555555555,
+        "action_threshold_failure_rate": 0.05555555555555555,
+        "direct_reuse_rate": 0.0,
+        "direct_reuse_failed_states": 0
+      },
+      {
+        "task": "libero_spatial/task7",
+        "states": 21,
+        "sigma_mae": 0.17619047619047618,
+        "mean_selected_sigma": 0.9142857142857143,
+        "below_suffix_oracle_rate": 0.0,
+        "action_threshold_failure_rate": 0.0,
+        "direct_reuse_rate": 0.0,
+        "direct_reuse_failed_states": 0
+      },
+      {
+        "task": "libero_spatial/task8",
+        "states": 15,
+        "sigma_mae": 0.1,
+        "mean_selected_sigma": 0.9066666666666666,
+        "below_suffix_oracle_rate": 0.0,
+        "action_threshold_failure_rate": 0.0,
+        "direct_reuse_rate": 0.0,
+        "direct_reuse_failed_states": 0
+      },
+      {
+        "task": "libero_spatial/task9",
+        "states": 19,
+        "sigma_mae": 0.1105263157894737,
+        "mean_selected_sigma": 0.8947368421052632,
+        "below_suffix_oracle_rate": 0.0,
+        "action_threshold_failure_rate": 0.0,
+        "direct_reuse_rate": 0.0,
+        "direct_reuse_failed_states": 0
+      }
+    ]
+  },
+  "within_s_bins": [
+    {
+      "s_bin": 0,
+      "states": 155,
+      "sigma_star_mean": 0.6780645161290322,
+      "sigma_star_variance": 0.012163995837669096,
+      "eligible_task_cells": [
+        {
+          "task": "libero_10/task3",
+          "states": 4,
+          "mean_sigma_star": 0.6499999999999999
+        },
+        {
+          "task": "libero_10/task4",
+          "states": 5,
+          "mean_sigma_star": 0.58
+        },
+        {
+          "task": "libero_10/task5",
+          "states": 7,
+          "mean_sigma_star": 0.7285714285714286
+        },
+        {
+          "task": "libero_10/task6",
+          "states": 8,
+          "mean_sigma_star": 0.675
+        },
+        {
+          "task": "libero_10/task7",
+          "states": 9,
+          "mean_sigma_star": 0.6999999999999998
+        },
+        {
+          "task": "libero_10/task8",
+          "states": 24,
+          "mean_sigma_star": 0.6958333333333333
+        },
+        {
+          "task": "libero_10/task9",
+          "states": 6,
+          "mean_sigma_star": 0.7666666666666667
+        },
+        {
+          "task": "libero_goal/task3",
+          "states": 7,
+          "mean_sigma_star": 0.8142857142857142
+        },
+        {
+          "task": "libero_goal/task5",
+          "states": 8,
+          "mean_sigma_star": 0.6875
+        },
+        {
+          "task": "libero_goal/task9",
+          "states": 4,
+          "mean_sigma_star": 0.8500000000000001
+        },
+        {
+          "task": "libero_object/task3",
+          "states": 7,
+          "mean_sigma_star": 0.6142857142857142
+        },
+        {
+          "task": "libero_object/task4",
+          "states": 11,
+          "mean_sigma_star": 0.5818181818181818
+        },
+        {
+          "task": "libero_object/task5",
+          "states": 7,
+          "mean_sigma_star": 0.6571428571428571
+        },
+        {
+          "task": "libero_object/task6",
+          "states": 7,
+          "mean_sigma_star": 0.6285714285714287
+        },
+        {
+          "task": "libero_object/task7",
+          "states": 7,
+          "mean_sigma_star": 0.5999999999999999
+        },
+        {
+          "task": "libero_object/task8",
+          "states": 9,
+          "mean_sigma_star": 0.6000000000000001
+        },
+        {
+          "task": "libero_object/task9",
+          "states": 4,
+          "mean_sigma_star": 0.525
+        },
+        {
+          "task": "libero_spatial/task4",
+          "states": 6,
+          "mean_sigma_star": 0.7166666666666667
+        },
+        {
+          "task": "libero_spatial/task6",
+          "states": 4,
+          "mean_sigma_star": 0.7
+        },
+        {
+          "task": "libero_spatial/task9",
+          "states": 4,
+          "mean_sigma_star": 0.7749999999999999
+        }
+      ],
+      "task_mean_spread": 0.32500000000000007
+    },
+    {
+      "s_bin": 1,
+      "states": 154,
+      "sigma_star_mean": 0.748051948051948,
+      "sigma_star_variance": 0.011976724574127176,
+      "eligible_task_cells": [
+        {
+          "task": "libero_10/task3",
+          "states": 11,
+          "mean_sigma_star": 0.790909090909091
+        },
+        {
+          "task": "libero_10/task4",
+          "states": 9,
+          "mean_sigma_star": 0.6888888888888888
+        },
+        {
+          "task": "libero_10/task5",
+          "states": 12,
+          "mean_sigma_star": 0.7166666666666667
+        },
+        {
+          "task": "libero_10/task6",
+          "states": 7,
+          "mean_sigma_star": 0.7714285714285714
+        },
+        {
+          "task": "libero_10/task7",
+          "states": 10,
+          "mean_sigma_star": 0.75
+        },
+        {
+          "task": "libero_10/task8",
+          "states": 9,
+          "mean_sigma_star": 0.7333333333333333
+        },
+        {
+          "task": "libero_10/task9",
+          "states": 7,
+          "mean_sigma_star": 0.7428571428571429
+        },
+        {
+          "task": "libero_goal/task3",
+          "states": 6,
+          "mean_sigma_star": 0.7166666666666667
+        },
+        {
+          "task": "libero_goal/task4",
+          "states": 4,
+          "mean_sigma_star": 0.7250000000000001
+        },
+        {
+          "task": "libero_goal/task5",
+          "states": 4,
+          "mean_sigma_star": 0.8500000000000001
+        },
+        {
+          "task": "libero_goal/task8",
+          "states": 3,
+          "mean_sigma_star": 0.7333333333333334
+        },
+        {
+          "task": "libero_goal/task9",
+          "states": 8,
+          "mean_sigma_star": 0.875
+        },
+        {
+          "task": "libero_object/task3",
+          "states": 8,
+          "mean_sigma_star": 0.7375
+        },
+        {
+          "task": "libero_object/task4",
+          "states": 5,
+          "mean_sigma_star": 0.74
+        },
+        {
+          "task": "libero_object/task5",
+          "states": 7,
+          "mean_sigma_star": 0.7428571428571429
+        },
+        {
+          "task": "libero_object/task6",
+          "states": 6,
+          "mean_sigma_star": 0.6666666666666666
+        },
+        {
+          "task": "libero_object/task7",
+          "states": 7,
+          "mean_sigma_star": 0.7142857142857143
+        },
+        {
+          "task": "libero_object/task8",
+          "states": 6,
+          "mean_sigma_star": 0.75
+        },
+        {
+          "task": "libero_spatial/task3",
+          "states": 4,
+          "mean_sigma_star": 0.75
+        },
+        {
+          "task": "libero_spatial/task4",
+          "states": 5,
+          "mean_sigma_star": 0.8200000000000001
+        },
+        {
+          "task": "libero_spatial/task6",
+          "states": 3,
+          "mean_sigma_star": 0.7333333333333334
+        },
+        {
+          "task": "libero_spatial/task7",
+          "states": 4,
+          "mean_sigma_star": 0.675
+        },
+        {
+          "task": "libero_spatial/task9",
+          "states": 4,
+          "mean_sigma_star": 0.825
+        }
+      ],
+      "task_mean_spread": 0.20833333333333337
+    },
+    {
+      "s_bin": 2,
+      "states": 154,
+      "sigma_star_mean": 0.764935064935065,
+      "sigma_star_variance": 0.01019902175746332,
+      "eligible_task_cells": [
+        {
+          "task": "libero_10/task3",
+          "states": 10,
+          "mean_sigma_star": 0.74
+        },
+        {
+          "task": "libero_10/task4",
+          "states": 13,
+          "mean_sigma_star": 0.7461538461538463
+        },
+        {
+          "task": "libero_10/task5",
+          "states": 7,
+          "mean_sigma_star": 0.7000000000000001
+        },
+        {
+          "task": "libero_10/task6",
+          "states": 10,
+          "mean_sigma_star": 0.69
+        },
+        {
+          "task": "libero_10/task7",
+          "states": 4,
+          "mean_sigma_star": 0.7000000000000001
+        },
+        {
+          "task": "libero_10/task8",
+          "states": 14,
+          "mean_sigma_star": 0.7071428571428571
+        },
+        {
+          "task": "libero_10/task9",
+          "states": 11,
+          "mean_sigma_star": 0.8272727272727274
+        },
+        {
+          "task": "libero_goal/task3",
+          "states": 6,
+          "mean_sigma_star": 0.7666666666666666
+        },
+        {
+          "task": "libero_goal/task4",
+          "states": 4,
+          "mean_sigma_star": 0.75
+        },
+        {
+          "task": "libero_goal/task5",
+          "states": 7,
+          "mean_sigma_star": 0.8142857142857143
+        },
+        {
+          "task": "libero_goal/task6",
+          "states": 3,
+          "mean_sigma_star": 0.7666666666666666
+        },
+        {
+          "task": "libero_goal/task7",
+          "states": 6,
+          "mean_sigma_star": 0.8333333333333335
+        },
+        {
+          "task": "libero_goal/task8",
+          "states": 4,
+          "mean_sigma_star": 0.8
+        },
+        {
+          "task": "libero_goal/task9",
+          "states": 5,
+          "mean_sigma_star": 0.8400000000000001
+        },
+        {
+          "task": "libero_object/task4",
+          "states": 3,
+          "mean_sigma_star": 0.7333333333333334
+        },
+        {
+          "task": "libero_object/task6",
+          "states": 3,
+          "mean_sigma_star": 0.9333333333333332
+        },
+        {
+          "task": "libero_object/task8",
+          "states": 4,
+          "mean_sigma_star": 0.7250000000000001
+        },
+        {
+          "task": "libero_object/task9",
+          "states": 8,
+          "mean_sigma_star": 0.75
+        },
+        {
+          "task": "libero_spatial/task4",
+          "states": 7,
+          "mean_sigma_star": 0.742857142857143
+        },
+        {
+          "task": "libero_spatial/task5",
+          "states": 5,
+          "mean_sigma_star": 0.8600000000000001
+        },
+        {
+          "task": "libero_spatial/task6",
+          "states": 4,
+          "mean_sigma_star": 0.825
+        },
+        {
+          "task": "libero_spatial/task7",
+          "states": 3,
+          "mean_sigma_star": 0.7333333333333334
+        },
+        {
+          "task": "libero_spatial/task8",
+          "states": 3,
+          "mean_sigma_star": 0.8666666666666667
+        },
+        {
+          "task": "libero_spatial/task9",
+          "states": 4,
+          "mean_sigma_star": 0.75
+        }
+      ],
+      "task_mean_spread": 0.2433333333333333
+    },
+    {
+      "s_bin": 3,
+      "states": 154,
+      "sigma_star_mean": 0.8038961038961038,
+      "sigma_star_variance": 0.009205599595209987,
+      "eligible_task_cells": [
+        {
+          "task": "libero_10/task3",
+          "states": 10,
+          "mean_sigma_star": 0.78
+        },
+        {
+          "task": "libero_10/task4",
+          "states": 8,
+          "mean_sigma_star": 0.775
+        },
+        {
+          "task": "libero_10/task5",
+          "states": 3,
+          "mean_sigma_star": 0.7333333333333333
+        },
+        {
+          "task": "libero_10/task6",
+          "states": 9,
+          "mean_sigma_star": 0.7777777777777778
+        },
+        {
+          "task": "libero_10/task7",
+          "states": 6,
+          "mean_sigma_star": 0.7666666666666666
+        },
+        {
+          "task": "libero_10/task8",
+          "states": 15,
+          "mean_sigma_star": 0.7799999999999997
+        },
+        {
+          "task": "libero_10/task9",
+          "states": 11,
+          "mean_sigma_star": 0.8545454545454547
+        },
+        {
+          "task": "libero_goal/task3",
+          "states": 5,
+          "mean_sigma_star": 0.8
+        },
+        {
+          "task": "libero_goal/task4",
+          "states": 5,
+          "mean_sigma_star": 0.8400000000000001
+        },
+        {
+          "task": "libero_goal/task6",
+          "states": 4,
+          "mean_sigma_star": 0.875
+        },
+        {
+          "task": "libero_goal/task7",
+          "states": 3,
+          "mean_sigma_star": 0.8333333333333334
+        },
+        {
+          "task": "libero_goal/task9",
+          "states": 4,
+          "mean_sigma_star": 0.85
+        },
+        {
+          "task": "libero_object/task3",
+          "states": 4,
+          "mean_sigma_star": 0.75
+        },
+        {
+          "task": "libero_object/task4",
+          "states": 3,
+          "mean_sigma_star": 0.8333333333333334
+        },
+        {
+          "task": "libero_object/task5",
+          "states": 3,
+          "mean_sigma_star": 0.9
+        },
+        {
+          "task": "libero_object/task6",
+          "states": 4,
+          "mean_sigma_star": 0.7749999999999999
+        },
+        {
+          "task": "libero_object/task7",
+          "states": 4,
+          "mean_sigma_star": 0.875
+        },
+        {
+          "task": "libero_object/task9",
+          "states": 4,
+          "mean_sigma_star": 0.7250000000000001
+        },
+        {
+          "task": "libero_spatial/task3",
+          "states": 6,
+          "mean_sigma_star": 0.8666666666666667
+        },
+        {
+          "task": "libero_spatial/task5",
+          "states": 10,
+          "mean_sigma_star": 0.8100000000000002
+        },
+        {
+          "task": "libero_spatial/task6",
+          "states": 6,
+          "mean_sigma_star": 0.7666666666666666
+        },
+        {
+          "task": "libero_spatial/task7",
+          "states": 9,
+          "mean_sigma_star": 0.7666666666666666
+        },
+        {
+          "task": "libero_spatial/task8",
+          "states": 7,
+          "mean_sigma_star": 0.7999999999999999
+        },
+        {
+          "task": "libero_spatial/task9",
+          "states": 4,
+          "mean_sigma_star": 0.8500000000000001
+        }
+      ],
+      "task_mean_spread": 0.17499999999999993
+    },
+    {
+      "s_bin": 4,
+      "states": 155,
+      "sigma_star_mean": 0.8451612903225807,
+      "sigma_star_variance": 0.015250780437044744,
+      "eligible_task_cells": [
+        {
+          "task": "libero_10/task3",
+          "states": 3,
+          "mean_sigma_star": 0.9
+        },
+        {
+          "task": "libero_10/task4",
+          "states": 4,
+          "mean_sigma_star": 0.825
+        },
+        {
+          "task": "libero_10/task6",
+          "states": 37,
+          "mean_sigma_star": 0.772972972972973
+        },
+        {
+          "task": "libero_10/task7",
+          "states": 12,
+          "mean_sigma_star": 0.8666666666666667
+        },
+        {
+          "task": "libero_10/task9",
+          "states": 9,
+          "mean_sigma_star": 0.7777777777777778
+        },
+        {
+          "task": "libero_goal/task3",
+          "states": 20,
+          "mean_sigma_star": 0.8950000000000001
+        },
+        {
+          "task": "libero_goal/task6",
+          "states": 8,
+          "mean_sigma_star": 0.8500000000000001
+        },
+        {
+          "task": "libero_goal/task7",
+          "states": 21,
+          "mean_sigma_star": 0.9904761904761905
+        },
+        {
+          "task": "libero_object/task6",
+          "states": 3,
+          "mean_sigma_star": 0.8333333333333334
+        },
+        {
+          "task": "libero_object/task8",
+          "states": 4,
+          "mean_sigma_star": 0.95
+        },
+        {
+          "task": "libero_spatial/task3",
+          "states": 8,
+          "mean_sigma_star": 0.925
+        },
+        {
+          "task": "libero_spatial/task7",
+          "states": 4,
+          "mean_sigma_star": 0.75
+        },
+        {
+          "task": "libero_spatial/task9",
+          "states": 3,
+          "mean_sigma_star": 0.7000000000000001
+        }
+      ],
+      "task_mean_spread": 0.29047619047619044
+    }
+  ],
+  "phase_b_required_positive_pairs": 828,
+  "phase_b_nominal_shared_first_nfe": 38088,
+  "phase_b_preflight_warmup_cost_not_yet_included": true,
+  "verdict": "PENDING_FULL_TWO_STAGE_REVIEW",
+  "overall_goal_complete": false,
+  "folds_sha256": "7c66f5f1ad3177726f62ddaa4df5cf129440e8575aec01ff8fedcb785717d6e0",
+  "arrays_sha256": "4185492e18bddbcdef49eebc97a8a58a39374d9a1dfd4f7d94a26d366ad851ee"
+}

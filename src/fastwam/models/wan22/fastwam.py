@@ -735,6 +735,43 @@ class FastWAM(torch.nn.Module):
         )
         return self.action_expert.post(action_tokens)
 
+    def _denoise_action_with_video_cache_and_pooled_features(
+        self,
+        latents_action: torch.Tensor,
+        timestep_action: torch.Tensor,
+        context: torch.Tensor,
+        context_mask: torch.Tensor,
+        video_cache_k: list[torch.Tensor],
+        video_cache_v: list[torch.Tensor],
+        action_attention_mask: torch.Tensor,
+    ) -> tuple[torch.Tensor, list[torch.Tensor]]:
+        (
+            action_tokens,
+            _t,
+            action_t_mod,
+            action_context,
+            action_context_mask,
+            action_freqs,
+        ) = self.action_expert.prepare(
+            action_tokens=latents_action,
+            timestep=timestep_action,
+            context=context,
+            context_mask=context_mask,
+        )
+        action_tokens, pooled_features = (
+            self.mot.forward_action_with_video_cache_tensor_with_pooled_features(
+                action_tokens=action_tokens,
+                action_freqs=action_freqs,
+                action_t_mod=action_t_mod,
+                action_context=action_context,
+                action_context_mask=action_context_mask,
+                video_cache_k=video_cache_k,
+                video_cache_v=video_cache_v,
+                action_attention_mask=action_attention_mask,
+            )
+        )
+        return self.action_expert.post(action_tokens), pooled_features
+
     @torch.no_grad()
     def _predict_action_noise_with_cache(
         self,
@@ -992,6 +1029,15 @@ class FastWAM(torch.nn.Module):
         rand_device: str = "cpu",
         tiled: bool = False,
         compile_action_infer: bool = False,
+        initial_noise: Optional[torch.Tensor] = None,
+        action_prior: Optional[torch.Tensor] = None,
+        start_sigma: float = 1.0,
+        return_sampling_metadata: bool = False,
+        video_feature_layers: Optional[tuple[int, ...]] = None,
+        action_feature_layers: Optional[tuple[int, ...]] = None,
+        return_video_probe_cache: bool = False,
+        future_video_noise: Optional[torch.Tensor] = None,
+        action_prior_mask: Optional[torch.Tensor] = None,
     ) -> dict[str, Any]:
         self.eval()
         if str(getattr(self.video_expert, "video_attention_mask_mode", "")) != "first_frame_causal":
@@ -1023,17 +1069,80 @@ class FastWAM(torch.nn.Module):
                 raise ValueError(f"`proprio` last dim must be {self.proprio_dim}, got {proprio.shape[1]}")
             proprio = proprio.to(device=self.device, dtype=self.torch_dtype)
 
-        generator = None if seed is None else torch.Generator(device=rand_device).manual_seed(seed)
-        latents_action = torch.randn(
-            (1, action_horizon, self.action_expert.action_dim),
-            generator=generator,
-            device=rand_device,
-            dtype=torch.float32,
-        ).to(device=self.device, dtype=self.torch_dtype)
+        action_shape = (1, action_horizon, self.action_expert.action_dim)
+        start_sigma = float(start_sigma)
+        if not 0.0 <= start_sigma <= 1.0:
+            raise ValueError(f"`start_sigma` must be in [0, 1], got {start_sigma}")
+
+        if initial_noise is None:
+            generator = None if seed is None else torch.Generator(device=rand_device).manual_seed(seed)
+            noise_action = torch.randn(
+                action_shape,
+                generator=generator,
+                device=rand_device,
+                dtype=torch.float32,
+            )
+        else:
+            noise_action = torch.as_tensor(initial_noise, dtype=torch.float32, device=rand_device)
+            if noise_action.ndim == 2:
+                noise_action = noise_action.unsqueeze(0)
+            if tuple(noise_action.shape) != action_shape:
+                raise ValueError(
+                    f"`initial_noise` must have shape {action_shape} or {action_shape[1:]}, "
+                    f"got {tuple(noise_action.shape)}"
+                )
+
+        if action_prior is None:
+            if action_prior_mask is not None:
+                raise ValueError("`action_prior_mask` requires `action_prior`.")
+            if start_sigma != 1.0:
+                raise ValueError("`action_prior` is required when `start_sigma` is less than 1.")
+            latents_action = noise_action
+        else:
+            prior_action = torch.as_tensor(action_prior, dtype=torch.float32, device=rand_device)
+            if prior_action.ndim == 2:
+                prior_action = prior_action.unsqueeze(0)
+            if tuple(prior_action.shape) != action_shape:
+                raise ValueError(
+                    f"`action_prior` must have shape {action_shape} or {action_shape[1:]}, "
+                    f"got {tuple(prior_action.shape)}"
+                )
+            latents_action = (1.0 - start_sigma) * prior_action + start_sigma * noise_action
+            if action_prior_mask is not None:
+                # Opt-in positional prior. False positions retain epsilon, NOT
+                # start_sigma * epsilon. The default all-position path is unchanged.
+                prior_mask = torch.as_tensor(action_prior_mask, device=rand_device)
+                if prior_mask.dtype != torch.bool or tuple(prior_mask.shape) != (action_horizon,):
+                    raise ValueError("`action_prior_mask` must be bool with shape [action_horizon].")
+                latents_action = torch.where(prior_mask[None, :, None], latents_action, noise_action)
+
+        initial_flow_state = latents_action.detach().to(device="cpu", dtype=torch.float32)
+        latents_action = latents_action.to(device=self.device, dtype=self.torch_dtype)
 
         input_image = input_image.to(device=self.device, dtype=self.torch_dtype)
         first_frame_latents = self._encode_input_image_latents_tensor(input_image=input_image, tiled=tiled)
         fuse_flag = bool(getattr(self.video_expert, "fuse_vae_embedding_in_latents", False))
+
+        # Opt-in one-pass H=32 audit. Slots 1/2 are noisy sigma=1 latents,
+        # NOT denoised future observations. The default inference path is unchanged.
+        video_latents = first_frame_latents
+        if future_video_noise is not None:
+            expert = self.video_expert
+            if action_horizon != 32:
+                raise ValueError("Future-KV audit requires action_horizon=32.")
+            if (expert.action_conditioned or expert.control_adapter is not None
+                    or expert.patch_size[0] != 1 or not expert.seperated_timestep or not fuse_flag):
+                raise ValueError("Future-KV requires unconditioned video, temporal patch 1, separated timesteps, and fused observation.")
+            if video_feature_layers is not None:
+                raise ValueError("Future-KV audit does not support pooled video features.")
+            expected = list(first_frame_latents.shape)
+            expected[2] = 2
+            if first_frame_latents.shape[2] != 1 or tuple(future_video_noise.shape) != tuple(expected):
+                raise ValueError(f"future_video_noise must have shape {tuple(expected)}.")
+            future_video_noise = future_video_noise.to(device=self.device, dtype=first_frame_latents.dtype)
+            if not torch.isfinite(future_video_noise).all():
+                raise ValueError("future_video_noise must be finite.")
+            video_latents = torch.cat([first_frame_latents, future_video_noise], dim=2)
 
         use_prompt = prompt is not None
         use_context = context is not None or context_mask is not None
@@ -1069,6 +1178,9 @@ class FastWAM(torch.nn.Module):
             dtype=first_frame_latents.dtype,
             device=self.device,
         )
+        if future_video_noise is not None:
+            # prepare() overrides the current slot to t=0; future slots keep t=T.
+            timestep_video.fill_(float(self.infer_video_scheduler.num_train_timesteps))
         (
             video_tokens,
             _t_video,
@@ -1081,7 +1193,7 @@ class FastWAM(torch.nn.Module):
             _w_video,
             tokens_per_frame,
         ) = self.video_expert.prepare(
-            x=first_frame_latents,
+            x=video_latents,
             timestep=timestep_video,
             context=context,
             context_mask=context_mask,
@@ -1097,6 +1209,39 @@ class FastWAM(torch.nn.Module):
         )
         video_attention_mask = attention_mask[:video_seq_len, :video_seq_len]
         action_attention_mask = attention_mask[video_seq_len:, :]
+        if future_video_noise is not None:
+            # Physically remove future keys, not merely mask them in Action-DiT.
+            current_attention_mask = self._build_mot_attention_mask(
+                video_seq_len=tokens_per_frame, action_seq_len=latents_action.shape[1],
+                video_tokens_per_frame=tokens_per_frame, device=video_tokens.device,
+            )
+            action_attention_mask = current_attention_mask[tokens_per_frame:, :]
+        selected_feature_layers: tuple[int, ...] = ()
+        if video_feature_layers is not None:
+            selected_feature_layers = tuple(int(layer) for layer in video_feature_layers)
+            if not selected_feature_layers:
+                raise ValueError("`video_feature_layers` cannot be empty when provided.")
+            if len(set(selected_feature_layers)) != len(selected_feature_layers):
+                raise ValueError("`video_feature_layers` must not contain duplicates.")
+            if any(layer < 0 or layer >= self.mot.num_layers for layer in selected_feature_layers):
+                raise ValueError(
+                    f"`video_feature_layers` must be in [0, {self.mot.num_layers - 1}], "
+                    f"got {selected_feature_layers}."
+                )
+        selected_action_feature_layers: tuple[int, ...] = ()
+        if action_feature_layers is not None:
+            selected_action_feature_layers = tuple(int(layer) for layer in action_feature_layers)
+            if start_sigma != 1.0:
+                raise ValueError("Action first-step features require `start_sigma=1.0`.")
+            if not selected_action_feature_layers:
+                raise ValueError("`action_feature_layers` cannot be empty when provided.")
+            if len(set(selected_action_feature_layers)) != len(selected_action_feature_layers):
+                raise ValueError("`action_feature_layers` must not contain duplicates.")
+            if any(layer < 0 or layer >= self.mot.num_layers for layer in selected_action_feature_layers):
+                raise ValueError(
+                    f"`action_feature_layers` must be in [0, {self.mot.num_layers - 1}], "
+                    f"got {selected_action_feature_layers}."
+                )
         if compile_action_infer:
             if not hasattr(self, "_prefill_video_cache_compiled"):
                 self._prefill_video_cache_compiled = torch.compile(
@@ -1117,46 +1262,160 @@ class FastWAM(torch.nn.Module):
             denoise_action_with_video_cache = self._denoise_action_with_video_cache
         if compile_action_infer:
             torch.compiler.cudagraph_mark_step_begin()
-        video_cache_k, video_cache_v = prefill_video_cache(
-            video_tokens=video_tokens,
-            video_freqs=video_freqs,
-            video_t_mod=video_t_mod,
-            video_context=video_context,
-            video_context_mask=video_context_mask,
+        prefill_kwargs = dict(
+            video_tokens=video_tokens, video_freqs=video_freqs, video_t_mod=video_t_mod,
+            video_context=video_context, video_context_mask=video_context_mask,
             video_attention_mask=video_attention_mask,
         )
+        pooled_video_features = None
+        if selected_feature_layers:
+            if compile_action_infer:
+                if not hasattr(self, "_prefill_video_features_compiled"):
+                    self._prefill_video_features_compiled = torch.compile(
+                        self.mot.prefill_video_cache_tensor_with_pooled_features,
+                        mode="reduce-overhead",
+                        fullgraph=True,
+                    )
+                feature_prefill = self._prefill_video_features_compiled
+            else:
+                feature_prefill = self.mot.prefill_video_cache_tensor_with_pooled_features
+            video_cache_k, video_cache_v, all_pooled_features = feature_prefill(**prefill_kwargs)
+            pooled_video_features = torch.stack(
+                [all_pooled_features[layer][0] for layer in selected_feature_layers], dim=0
+            ).detach().to(device="cpu", dtype=torch.float32)
+        else:
+            video_cache_k, video_cache_v = prefill_video_cache(**prefill_kwargs)
         if compile_action_infer:
             # Inductor reduce-overhead may return graph-owned buffers that are overwritten on replay.
             video_cache_k = [cache.clone() for cache in video_cache_k]
             video_cache_v = [cache.clone() for cache in video_cache_v]
+
+        future_video_cache = None
+        if future_video_noise is not None:
+            future_video_cache = {
+                "sigma": 1.0,
+                "timestep": float(self.infer_video_scheduler.num_train_timesteps),
+                "tokens_per_frame": tokens_per_frame,
+                "input_noise": future_video_noise.detach().clone(),
+                "slots": [
+                    {
+                        "native_slot": slot,
+                        "video_k": [value[:, slot * tokens_per_frame:(slot + 1) * tokens_per_frame].detach().clone()
+                                    for value in video_cache_k],
+                        "video_v": [value[:, slot * tokens_per_frame:(slot + 1) * tokens_per_frame].detach().clone()
+                                    for value in video_cache_v],
+                    }
+                    for slot in (1, 2)
+                ],
+            }
+            video_cache_k = [value[:, :tokens_per_frame].contiguous() for value in video_cache_k]
+            video_cache_v = [value[:, :tokens_per_frame].contiguous() for value in video_cache_v]
+            video_context_mask = video_context_mask[:, :tokens_per_frame]
 
         infer_timesteps_action, infer_deltas_action = self.infer_action_scheduler.build_inference_schedule(
             num_inference_steps=num_inference_steps,
             device=self.device,
             dtype=latents_action.dtype,
             shift_override=sigma_shift,
+            start_sigma=start_sigma,
         )
-        for step_t_action, step_delta_action in zip(infer_timesteps_action, infer_deltas_action):
+        schedule = zip(infer_timesteps_action, infer_deltas_action) if start_sigma > 0.0 else ()
+        actual_nfe = 0
+        pooled_action_features = None
+        first_action_velocity_stats = None
+        first_action_timestep = None
+        for step_t_action, step_delta_action in schedule:
             if compile_action_infer:
                 torch.compiler.cudagraph_mark_step_begin()
             timestep_action = step_t_action.unsqueeze(0).to(dtype=latents_action.dtype, device=self.device)
 
-            pred_action_posi = denoise_action_with_video_cache(
-                latents_action=latents_action,
-                timestep_action=timestep_action,
-                context=context,
-                context_mask=context_mask,
-                video_cache_k=video_cache_k,
-                video_cache_v=video_cache_v,
+            denoise_kwargs = dict(
+                latents_action=latents_action, timestep_action=timestep_action,
+                context=context, context_mask=context_mask,
+                video_cache_k=video_cache_k, video_cache_v=video_cache_v,
                 action_attention_mask=action_attention_mask,
             )
+            if actual_nfe == 0 and selected_action_feature_layers:
+                if compile_action_infer:
+                    if not hasattr(self, "_denoise_action_features_compiled"):
+                        self._denoise_action_features_compiled = torch.compile(
+                            self._denoise_action_with_video_cache_and_pooled_features,
+                            mode="reduce-overhead",
+                            fullgraph=True,
+                        )
+                    feature_denoise = self._denoise_action_features_compiled
+                else:
+                    feature_denoise = self._denoise_action_with_video_cache_and_pooled_features
+                pred_action_posi, all_action_features = feature_denoise(**denoise_kwargs)
+                pooled_action_features = torch.stack(
+                    [all_action_features[layer][0] for layer in selected_action_feature_layers], dim=0
+                ).detach().to(device="cpu", dtype=torch.float32)
+                velocity = pred_action_posi[0].detach().float()
+                first_action_velocity_stats = torch.stack(
+                    (
+                        velocity.mean(dim=0),
+                        velocity.std(dim=0, unbiased=False),
+                        velocity.square().mean(dim=0).sqrt(),
+                        velocity.abs().amax(dim=0),
+                    ),
+                    dim=0,
+                ).to(device="cpu", dtype=torch.float32)
+                first_action_timestep = float(step_t_action.detach().float().cpu().item())
+            else:
+                pred_action_posi = denoise_action_with_video_cache(**denoise_kwargs)
             pred_action = pred_action_posi
 
             latents_action = self.infer_action_scheduler.step(pred_action, step_delta_action, latents_action)
+            actual_nfe += 1
 
-        return {
+        result = {
             "action": latents_action[0].detach().to(device="cpu", dtype=torch.float32),
         }
+        if future_video_cache is not None:
+            result["future_video_cache"] = future_video_cache
+        if pooled_video_features is not None:
+            result["video_features"] = {
+                "layer_indices": selected_feature_layers,
+                "representations": ("post_hidden_mean", "k_mean", "v_mean"),
+                "pooled": pooled_video_features,
+                "token_count": video_seq_len,
+            }
+        if pooled_action_features is not None:
+            result["action_first_features"] = {
+                "layer_indices": selected_action_feature_layers,
+                "representation": "post_hidden_mean",
+                "pooled": pooled_action_features,
+                "token_count": int(action_horizon),
+                "timestep": first_action_timestep,
+                "sigma": first_action_timestep / float(self.infer_action_scheduler.num_train_timesteps),
+                "velocity_stat_names": ("mean", "std", "rms", "max_abs"),
+                "velocity_stats": first_action_velocity_stats,
+            }
+        if return_sampling_metadata:
+            result["sampling"] = {
+                "initial_noise": noise_action[0].detach().to(device="cpu", dtype=torch.float32),
+                "initial_flow_state": initial_flow_state[0],
+                "start_sigma": start_sigma,
+                "requested_nfe": int(num_inference_steps),
+                "actual_nfe": actual_nfe,
+                "timesteps": infer_timesteps_action.detach().to(device="cpu", dtype=torch.float32),
+                "deltas": infer_deltas_action.detach().to(device="cpu", dtype=torch.float32),
+            }
+        if return_video_probe_cache:
+            # Opt-in, observational export AFTER the normal action loop. Own the
+            # buffers so a later compiled inference cannot overwrite this state.
+            # No extra VAE, observation prefill, or Action-DiT call is made here.
+            result["video_probe_cache"] = {
+                "video_k": [value.detach().clone() for value in video_cache_k],
+                "video_v": [value.detach().clone() for value in video_cache_v],
+                "video_context": video_context.detach().clone(),
+                "video_context_mask": video_context_mask.detach().clone(),
+                "context": context.detach().clone(),
+                "context_mask": context_mask.detach().clone(),
+                "first_frame_latents": first_frame_latents.detach().clone(),
+                "tokens_per_frame": tokens_per_frame,
+            }
+        return result
 
     @torch.no_grad()
     def infer(
@@ -1211,7 +1470,18 @@ class FastWAM(torch.nn.Module):
     def load_checkpoint(self, path, optimizer=None):
         payload = torch.load(path, map_location="cpu")
         if "mot" in payload:
-            self.mot.load_state_dict(payload["mot"], strict=False)
+            incompatible = self.mot.load_state_dict(payload["mot"], strict=False)
+            paths = getattr(self, "model_paths", {})
+            empty_init = (
+                paths.get("video_dit") == "SKIPPED_PRETRAIN"
+                and paths.get("action_dit_backbone") == "SKIPPED_PRETRAIN"
+            )
+            if empty_init and (incompatible.missing_keys or incompatible.unexpected_keys):
+                raise RuntimeError(
+                    "Checkpoint must completely cover empty-initialized MoT experts: "
+                    f"missing={incompatible.missing_keys[:10]}, "
+                    f"unexpected={incompatible.unexpected_keys[:10]}"
+                )
         elif "dit" in payload:
             logger.warning("Loading legacy `dit` checkpoint into video expert only.")
             self.video_expert.load_state_dict(payload["dit"], strict=False)

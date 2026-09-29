@@ -1,0 +1,73 @@
+{
+  "base_commit": "7faa71108368fbb3b6885649f112af607427a2d4",
+  "phase_a_job": "pt-su5qdf1o",
+  "reviewed_summary_sha256": "dc6eb3932bcacc5c02f1127542ee500a7e60ae9e7150e086a15499ffb99485f6",
+  "source_manifest_sha256": "d57bcf718bc1df5aadf1faa1be254d1a930469ecd448a735032e7fb5ae17ca59",
+  "imported_files": [
+    {
+      "file": "definitions.py",
+      "original_sha256": "06e0692f48cf0c61d047d5442a2cc153e5dea1899734ee9954cedf99dd950c52"
+    },
+    {
+      "file": "mapping.py",
+      "original_sha256": "7174aaf09f4f42e06ec11d5f57a469caed3e8e701092327e376349cda103cbfd"
+    },
+    {
+      "file": "refinement.py",
+      "original_sha256": "a26e124af2e2cf78e136c61ff5112a03115f1c8f3a93c92e5f5aa5b55addb0d9"
+    },
+    {
+      "file": "sweep_a.py",
+      "original_sha256": "586587f1306cbd757da5a7eb701b03d1754d88eca612ff54c353bc99f969d792"
+    },
+    {
+      "file": "analyze_a.py",
+      "original_sha256": "c050d65df323015d5f53d2a537ef46d6a359dcf56dd6380565bf505314f330c0"
+    },
+    {
+      "file": "review_a.py",
+      "original_sha256": "5a7245143fa0c42a316aefee08c7f715c2bb5385922bfae0209402259a6285c0"
+    },
+    {
+      "file": "io_utils.py",
+      "original_sha256": "a0a55262416b6b4f4ad358cd16b0260c1b0e1d3af7539e33e48c6a8ad32a8faa"
+    },
+    {
+      "file": "test_definitions.py",
+      "original_sha256": "01eae1c69678c41beb8078dafdfc23fb42a9ce1cfdd66d3fdc1eb710d4eab0f4"
+    },
+    {
+      "file": "test_analysis_a.py",
+      "original_sha256": "934af5a711123687757b50c0f1a917e65b3b028707a1b3054ada4362874f2e3c"
+    },
+    {
+      "file": "test_refinement.py",
+      "original_sha256": "92d9d403fae440a5e13370b3be25eed58e3374300253ca307db5d0d2af18cab1"
+    },
+    {
+      "file": "test_sampler.py",
+      "original_sha256": "27d67d18a380e6173432bf354c52dc4546e3c592111b0acc242299801b5be3b6"
+    },
+    {
+      "file": "test_review_a.py",
+      "original_sha256": "6a0f9423641339758354a072b48537f28877cba2c1040027b16927e423b850f1"
+    },
+    {
+      "file": "PROTOCOL.md",
+      "original_sha256": "5cadf472df3933456383b2c55179599170c6ea4911a734fb0a12cb0d583c7b91"
+    },
+    {
+      "file": "src/fastwam/models/wan22/fastwam.py",
+      "original_sha256": "8b79b2b8e3c93c0b1cc5e455fc91087b1eab608b7dcd984490788c707a68af8a"
+    },
+    {
+      "file": "src/fastwam/models/wan22/mot.py",
+      "original_sha256": "7c4c9036843ae07fcd17770778d176ebebc5cc27247ba4be5f31ff71b5d67643"
+    },
+    {
+      "file": "src/fastwam/models/wan22/schedulers/scheduler_continuous.py",
+      "original_sha256": "73d4fe6e435697c8f425c6f628ed14fa3d6c3cfc48d2bb808ffb674dbd44691d"
+    }
+  ],
+  "note": "Original hashes precede packaging edits. Private state bundles, cluster launchers and checkpoints are not distributed."
+}
