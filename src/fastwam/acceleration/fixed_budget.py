@@ -40,15 +40,23 @@ class CUDAGraphRunner:
                 static = _map_tensors(args, lambda t: t.clone(memory_format=torch.preserve_format))
                 stream = torch.cuda.Stream()
                 stream.wait_stream(torch.cuda.current_stream())
-                with torch.cuda.stream(stream):
-                    for _ in range(3):
-                        self.function(*static)
-                torch.cuda.current_stream().wait_stream(stream)
-                torch.cuda.synchronize()
-                graph = torch.cuda.CUDAGraph()
-                with torch.cuda.graph(graph, stream=stream):
-                    result = self.function(*static)
-                torch.cuda.synchronize()
+                # Each distinct mask specializes the same Python step code.
+                # Raise the Dynamo cache limit locally during graph preparation.
+                from torch._dynamo import config as dynamo_config
+
+                with dynamo_config.patch(
+                    cache_size_limit=max(256, dynamo_config.cache_size_limit),
+                    accumulated_cache_size_limit=max(1024, dynamo_config.accumulated_cache_size_limit),
+                ):
+                    with torch.cuda.stream(stream):
+                        for _ in range(3):
+                            self.function(*static)
+                    torch.cuda.current_stream().wait_stream(stream)
+                    torch.cuda.synchronize()
+                    graph = torch.cuda.CUDAGraph()
+                    with torch.cuda.graph(graph, stream=stream):
+                        result = self.function(*static)
+                    torch.cuda.synchronize()
                 self.entries[key] = static, graph, result
                 self.capture_seconds += time.perf_counter() - started
             static, graph, result = self.entries[key]
