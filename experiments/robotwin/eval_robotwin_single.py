@@ -221,6 +221,12 @@ def main(cfg: DictConfig):
     _append_override(overrides, "rand_device", cfg.EVALUATION.rand_device)
     _append_override(overrides, "tiled", cfg.EVALUATION.tiled)
     _append_override(overrides, "timing_enabled", cfg.EVALUATION.timing_enabled)
+    schedule = cfg.EVALUATION.fixed_action_schedule
+    if schedule is not None:
+        if schedule not in ("terminal97", "global50", "full300"):
+            schedule = str(_resolve_path(str(schedule), base=PROJECT_ROOT))
+        _append_override(overrides, "fixed_action_schedule", schedule)
+        _append_override(overrides, "fixed_action_backend", cfg.EVALUATION.fixed_action_backend)
     _append_override(
         overrides,
         "skip_get_obs_within_replan",

@@ -13,6 +13,8 @@ Official codebase for **Fast-WAM: Do World Action Models Need Test-time Future I
 
 This repository contains the training and evaluation code for FastWAM on LIBERO / RoboTwin.
 
+For RoboTwin fixed action-block budgets, see the [fixed-budget setup and reproduction guide](docs/FIXED_GLOBAL_BUDGET.md).
+
 ## What's New
 
 FastWAM is now faster, better suited to large-scale datasets, and more flexible

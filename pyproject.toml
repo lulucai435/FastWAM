@@ -46,3 +46,9 @@ dependencies = [
 [tool.setuptools.packages.find]
 where = ["src"]
 include = ["fastwam*"]
+
+[project.optional-dependencies]
+schedule = ["scipy>=1.11,<2"]
+
+[tool.setuptools.package-data]
+"fastwam.acceleration" = ["schedules/*.json"]

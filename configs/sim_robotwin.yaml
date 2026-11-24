@@ -34,6 +34,10 @@ EVALUATION:
   timing_enabled: false
   skip_get_obs_within_replan: true
 
+  # Optional whole-block action cache (10 denoising steps)
+  fixed_action_schedule: null
+  fixed_action_backend: graph
+
   # Runtime inputs
   dataset_stats_path: null
   device: cuda

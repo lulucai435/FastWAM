@@ -1,6 +1,8 @@
 import sys
 import os
 import subprocess
+import json
+import time
 
 sys.path.append("./")
 sys.path.append(f"./policy")
@@ -208,6 +210,10 @@ def main(usr_args):
     topk = 1
 
     model = get_model(usr_args)
+    budget_report = getattr(model, "get_fixed_budget_report", None)
+    budget_log = save_dir / "fixed_budget_episodes.jsonl" if budget_report and budget_report() else None
+    if budget_log is not None:
+        budget_log.write_text("", encoding="utf-8")
     st_seed, suc_num = eval_policy(task_name,
                                    TASK_ENV,
                                    args,
@@ -216,7 +222,8 @@ def main(usr_args):
                                    test_num=test_num,
                                    video_size=video_size,
                                    instruction_type=instruction_type,
-                                   skip_get_obs_within_replan=skip_get_obs_within_replan)
+                                   skip_get_obs_within_replan=skip_get_obs_within_replan,
+                                   budget_log=budget_log)
     suc_nums.append(suc_num)
 
     topk_success_rate = sorted(suc_nums, reverse=True)[:topk]
@@ -241,7 +248,8 @@ def eval_policy(task_name,
                 test_num=100,
                 video_size=None,
                 instruction_type=None,
-                skip_get_obs_within_replan=False):
+                skip_get_obs_within_replan=False,
+                budget_log=None):
     print(f"\033[34mTask Name: {args['task_name']}\033[0m")
     print(f"\033[34mPolicy Name: {args['policy_name']}\033[0m")
 
@@ -363,6 +371,7 @@ def eval_policy(task_name,
 
         succ = False
         reset_func(model)
+        rollout_start = time.perf_counter()
         while TASK_ENV.take_action_cnt < TASK_ENV.step_lim:
             need_obs = True
             if skip_get_obs_within_replan and hasattr(model, "should_request_observation"):
@@ -386,6 +395,16 @@ def eval_policy(task_name,
                 / f"episode{episode_idx}_randomized-{str(is_randomized).lower()}_success-{str(succ).lower()}.mp4"
             )
             current_video_path.rename(renamed_video_path)
+
+        if budget_log is not None:
+            row = model.get_fixed_budget_report()
+            row.update(task=task_name, episode=TASK_ENV.test_num, seed=now_seed,
+                       instruction=instruction, success=bool(succ),
+                       actions_executed=TASK_ENV.take_action_cnt,
+                       stop_reason="success" if succ else "step_limit",
+                       rollout_s=time.perf_counter() - rollout_start)
+            with budget_log.open("a", encoding="utf-8") as handle:
+                handle.write(json.dumps(row, ensure_ascii=False, allow_nan=False) + "\n")
 
         if succ:
             TASK_ENV.suc += 1

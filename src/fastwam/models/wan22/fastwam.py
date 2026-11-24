@@ -994,6 +994,12 @@ class FastWAM(torch.nn.Module):
         compile_action_infer: bool = False,
     ) -> dict[str, Any]:
         self.eval()
+        fixed_budget = getattr(self, "fixed_action_budget", None)
+        if fixed_budget is not None:
+            from ...acceleration.schedule import STEPS
+
+            if num_inference_steps != STEPS or compile_action_infer:
+                raise ValueError("Fixed action budgets require 10 steps and use their own compile backend")
         if str(getattr(self.video_expert, "video_attention_mask_mode", "")) != "first_frame_causal":
             raise ValueError(
                 "`infer_action` requires `video_attention_mask_mode='first_frame_causal'`."
@@ -1043,7 +1049,8 @@ class FastWAM(torch.nn.Module):
             raise ValueError("Either `prompt` or both `context/context_mask` must be provided.")
 
         if use_prompt:
-            context, context_mask = self.encode_prompt(prompt)
+            encode_prompt = fixed_budget.encode_prompt if fixed_budget is not None else self.encode_prompt
+            context, context_mask = encode_prompt(prompt)
         else:
             if context is None or context_mask is None:
                 raise ValueError("`context` and `context_mask` must be both provided together.")
@@ -1097,7 +1104,9 @@ class FastWAM(torch.nn.Module):
         )
         video_attention_mask = attention_mask[:video_seq_len, :video_seq_len]
         action_attention_mask = attention_mask[video_seq_len:, :]
-        if compile_action_infer:
+        if fixed_budget is not None:
+            prefill_video_cache = fixed_budget.prefill
+        elif compile_action_infer:
             if not hasattr(self, "_prefill_video_cache_compiled"):
                 self._prefill_video_cache_compiled = torch.compile(
                     self.mot.prefill_video_cache_tensor,
@@ -1136,27 +1145,34 @@ class FastWAM(torch.nn.Module):
             dtype=latents_action.dtype,
             shift_override=sigma_shift,
         )
-        for step_t_action, step_delta_action in zip(infer_timesteps_action, infer_deltas_action):
-            if compile_action_infer:
-                torch.compiler.cudagraph_mark_step_begin()
-            timestep_action = step_t_action.unsqueeze(0).to(dtype=latents_action.dtype, device=self.device)
-
-            pred_action_posi = denoise_action_with_video_cache(
-                latents_action=latents_action,
-                timestep_action=timestep_action,
-                context=context,
-                context_mask=context_mask,
-                video_cache_k=video_cache_k,
-                video_cache_v=video_cache_v,
-                action_attention_mask=action_attention_mask,
+        if fixed_budget is not None:
+            latents_action = fixed_budget.run(
+                latents_action, context, context_mask, video_cache_k, video_cache_v,
+                action_attention_mask, infer_timesteps_action, infer_deltas_action,
             )
-            pred_action = pred_action_posi
+        else:
+            for step_t_action, step_delta_action in zip(infer_timesteps_action, infer_deltas_action):
+                if compile_action_infer:
+                    torch.compiler.cudagraph_mark_step_begin()
+                timestep_action = step_t_action.unsqueeze(0).to(dtype=latents_action.dtype, device=self.device)
 
-            latents_action = self.infer_action_scheduler.step(pred_action, step_delta_action, latents_action)
+                pred_action_posi = denoise_action_with_video_cache(
+                    latents_action=latents_action,
+                    timestep_action=timestep_action,
+                    context=context,
+                    context_mask=context_mask,
+                    video_cache_k=video_cache_k,
+                    video_cache_v=video_cache_v,
+                    action_attention_mask=action_attention_mask,
+                )
+                pred_action = pred_action_posi
 
-        return {
-            "action": latents_action[0].detach().to(device="cpu", dtype=torch.float32),
-        }
+                latents_action = self.infer_action_scheduler.step(pred_action, step_delta_action, latents_action)
+
+        result = {"action": latents_action[0].detach().to(device="cpu", dtype=torch.float32)}
+        if fixed_budget is not None:
+            result["fixed_action_budget"] = fixed_budget.schedule.metadata()
+        return result
 
     @torch.no_grad()
     def infer(

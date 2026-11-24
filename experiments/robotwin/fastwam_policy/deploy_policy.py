@@ -183,6 +183,8 @@ class WorldActionRobotWinPolicy:
         self.episode_count = 0
         self.step_count = 0
         self._timing_rollout = {"infer_s": 0.0, "sim_s": 0.0}
+        self._budget_plan_ms = []
+        self._budget_capture_start = 0.0
 
         logger.info(
             "Initialized WorldActionRobotWinPolicy | ckpt=%s | stats=%s | horizon=%d | replan=%d",
@@ -254,11 +256,16 @@ class WorldActionRobotWinPolicy:
         }
         if "num_video_frames" in inspect.signature(self.model.infer_action).parameters:
             infer_kwargs["num_video_frames"] = int(self._num_video_frames)
-        infer_t0 = time.perf_counter() if self.timing_enabled else 0.0
+        budget_runtime = getattr(self.model, "fixed_action_budget", None)
+        infer_t0 = time.perf_counter() if self.timing_enabled or budget_runtime is not None else 0.0
         with torch.no_grad():
             pred = self.model.infer_action(**infer_kwargs)
-        if self.timing_enabled:
-            self._timing_rollout["infer_s"] += time.perf_counter() - infer_t0
+        if infer_t0:
+            elapsed = time.perf_counter() - infer_t0  # infer_action returns a CPU tensor
+            if self.timing_enabled:
+                self._timing_rollout["infer_s"] += elapsed
+            if budget_runtime is not None:
+                self._budget_plan_ms.append(elapsed * 1000)
 
         action_tensor = pred["action"]  # [T, D]
         action_chunk = self._denormalize_action(action_tensor)[0]  # [T, D]
@@ -294,7 +301,19 @@ class WorldActionRobotWinPolicy:
             self._timing_rollout["sim_s"] += time.perf_counter() - sim_t0
         self.step_count += 1
 
+    def get_fixed_budget_report(self):
+        runtime = getattr(self.model, "fixed_action_budget", None)
+        if runtime is None:
+            return None
+        return dict(**runtime.schedule.metadata(), backend=runtime.backend,
+                    plans=len(self._budget_plan_ms), total_calls=runtime.schedule.calls * len(self._budget_plan_ms),
+                    plan_ms=list(self._budget_plan_ms),
+                    graph_capture_s=runtime.capture_seconds - self._budget_capture_start)
+
     def reset_timing_rollout(self) -> None:
+        self._budget_plan_ms.clear()
+        runtime = getattr(self.model, "fixed_action_budget", None)
+        self._budget_capture_start = runtime.capture_seconds if runtime is not None else 0.0
         self._timing_rollout["infer_s"] = 0.0
         self._timing_rollout["sim_s"] = 0.0
 
@@ -388,6 +407,19 @@ def get_model(usr_args: Dict[str, Any]):
         timing_enabled=timing_enabled,
         num_video_frames=(int(cfg.data.train.num_frames) - 1) // int(cfg.data.train.action_video_freq_ratio) + 1,
     )
+    schedule = usr_args.get("fixed_action_schedule", cfg.EVALUATION.get("fixed_action_schedule"))
+    if not _is_none_like(schedule):
+        from fastwam.acceleration.fixed_budget import FixedBudgetRuntime
+        from fastwam.acceleration.schedule import STEPS, load_schedule
+        from fastwam.models.wan22.fastwam import FastWAM
+
+        if type(policy.model).infer_action is not FastWAM.infer_action:
+            raise ValueError("Fixed action budgets support the FastWAM action-only inference path")
+        if policy.num_inference_steps != STEPS:
+            raise ValueError(f"Set num_inference_steps={STEPS} for a fixed action schedule")
+        backend = str(usr_args.get("fixed_action_backend", cfg.EVALUATION.get("fixed_action_backend", "graph")))
+        policy.model.fixed_action_budget = FixedBudgetRuntime(policy.model, load_schedule(schedule), backend)
+        logger.info("Fixed action budget (%s): %s", backend, policy.model.fixed_action_budget.schedule.metadata())
     return policy
 
 
